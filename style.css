@@ -1,0 +1,34 @@
+body{
+    
+}
+#container{
+    height: 100vh;
+    min-width: 1400px;
+}
+
+.darkMode{
+    background-color: rgb(49, 43, 43);
+    color: white;
+}
+.cardBox{
+}
+.cardBox:hover{
+    background-color: lightskyblue;
+    transition: 0.75s;
+    cursor: pointer;
+}
+.selected{
+    background-color: lightskyblue;
+}
+
+.imgSVGs{
+    
+}
+  .dispNone{
+      display: none;
+  }
+
+  #board{
+      height: 80vh;
+      
+  }

@@ -1,0 +1,93 @@
+Przejdź do głównej treści
+Logo Firebase
+Opis projektu
+Programowanie
+Authentication, Cloud Firestore, Realtime Database, Storage, Hosting, Functions i Machine Learning
+Jakość
+Crashlytics, Performance, Test Lab i App Distribution
+Analytics
+Dashboard, Events, Conversions, Audiences, Funnels, User Properties, Latest Release, Retention, StreamView i DebugView
+Rozwój
+Predictions, A/B Testing, Cloud Messaging, In-App Messaging, Remote Config, Dynamic Links i AdMob
+Extensions
+Abonament:Spark
+Bez opłat 0 USD/miesiąc
+
+Planning Poker	
+ 
+Wyświetl dokumentację
+Planning Poker
+Nie ma jeszcze żadnych danych Analytics…
+Przechowywanie i synchronizowanie danych aplikacji w zaledwie kilka milisekund
+
+Authentication
+Uwierzytelnianie użytkowników i zarządzanie nimi
+
+Cloud Firestore
+Aktualizacje w czasie rzeczywistym, wydajne zapytania i automatyczne skalowanie
+Zobacz wszystkie funkcje z kategorii Programowanie
+Monitorowanie jakości aplikacji
+
+Crashlytics
+Określanie priorytetów i rozwiązywanie problemów dotyczących stabilności
+
+Performance
+Otrzymywanie statystyk wydajności aplikacji
+Zobacz wszystkie funkcje z kategorii Jakość
+Poszerzanie i angażowanie grona odbiorców
+
+Cloud Messaging
+Docieranie do odpowiednich użytkowników we właściwym czasie
+
+A/B Testing
+Usprawnianie kluczowych przepływów i powiadomień
+Zobacz wszystkie funkcje z kategorii Rozwój
+Szybko wdrażaj dodatkowe funkcje w swojej aplikacji
+
+Extensions
+Gotowe rozwiązania, dzięki którym oszczędzisz czas
+Zobacz wszystkie funkcje z kategorii Extensions
+Wyświetl wszystkie funkcje Firebase
+
+
+Wyświetl dokumentację
+Dodaj Firebase do swojej aplikacji internetowej
+Zarejestruj aplikację
+Dodaj pakiet Firebase SDK
+Instalowanie wiersza poleceń Firebase
+4 
+Wdrażanie w Hostingu Firebase
+Możesz wdrożyć witrynę w tej chwili albo później. Aby zrobić to teraz, otwórz okno terminala i przejdź do głównego katalogu swojej aplikacji internetowej lub utwórz taki katalog.
+
+Zaloguj się w Google
+
+firebase login
+Inicjowanie projektu
+Uruchom to polecenie w głównym katalogu swojej aplikacji:
+
+
+firebase init
+Określ witrynę w pliku firebase.json
+Dodaj nazwę witryny do pliku konfiguracyjnego firebase.json. Gdy skończysz konfigurację, zapoznaj się ze sprawdzonymi praktykami dotyczącymi wdrażania w wielu witrynach.
+
+
+{
+  "hosting": {
+    "site": "online-planning-poker",
+    "public": "public",
+    ...
+  }
+}
+Gdy wszystko będzie gotowe, wdróż swoją aplikację internetową
+Zapisz pliki statyczne (np. HTML, CSS, JS) w katalogu wdrożenia aplikacji (domyślnie jest to „public”). Następnie uruchom to polecenie w głównym katalogu aplikacji:
+
+
+firebase deploy --only hosting:online-planning-poker
+Po wdrożeniu aplikacji możesz zobaczyć ją pod adresem online-planning-poker.web.app
+
+Potrzebujesz pomocy? Przeczytaj artykuł o hostowaniu dokumentów.
+
+
+Alerty Firebase · Brak alertów
+Ustawienia
+Twoja aplikacja internetowa będzie dostępna pod tym adresem URL. Później możesz dodać domenę niestandardową.
