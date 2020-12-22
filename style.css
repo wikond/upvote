@@ -1,3 +1,8 @@
+:root{
+    --color : white;
+    --background-color: rgb(44, 44, 44);
+}
+
 body{
     
 }
@@ -7,8 +12,8 @@ body{
 }
 
 .darkMode{
-    background-color: rgb(49, 43, 43);
-    color: white;
+    background-color: var(--background-color);
+    color: var(--color);
 }
 .cardBox{
 }
@@ -31,4 +36,32 @@ body{
   #board{
       height: 80vh;
       
+  }
+
+  .task{
+      border: solid 2px lightblue;
+      border-radius: 10px;
+      margin-top: 3px;
+      text-align: center;
+  }
+  .task>span>svg{
+      width: 20px;
+      height: 20px;
+  }
+  .taskText{
+      margin: 3px;
+      width: 90%;
+      border-radius: 10px;
+      border: none;
+      outline-style: none;
+      background-color: var(--background-color);
+    color: var(--color);
+      
+  }
+  .taskBtn{
+    background-color: var(--background-color);
+    color: var(--color);
+    border: red;
+    border-style: none;
+    outline-style: none;
   }

@@ -17,6 +17,80 @@ firebase.initializeApp(firebaseConfig);
 
 
 //Global variables 
+//task object constructor
+function Task(roomID, nameID, pinID, headerTxt, descTxt, statusID, userID, priorityID, columnID) {
+    this.userID = userID
+    this.room = roomID;
+    this.pin = pinID;
+    this.name = nameID;
+    this.header = headerTxt;
+    this.desc = descTxt;
+    this.columnID = columnID;
+    this.priorityID = priorityID
+    this.status = statusID;
+}
+
+
+let $taskBoxes;     // DOM elements - div-s for dynymic collection of tasks
+let $addTaskBtns;   // collection of add new task buttons in columns
+
+//icons set
+const iconSet = {
+    leftArrow: `<svg xmlns=" http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+<path fill-rule="evenodd"
+    d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+<path fill-rule="evenodd"
+    d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
+</svg>`,
+    rightArrow: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+<path fill-rule="evenodd"
+    d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+<path fill-rule="evenodd"
+    d="M4 8a.5.5 0 0 0 .5.5h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5A.5.5 0 0 0 4 8z" />
+</svg>`,
+    upArrow: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+<path fill-rule="evenodd"
+    d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+<path fill-rule="evenodd"
+    d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z" />
+</svg>`,
+    downArrow: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+class="bi bi-arrow-down-circle" viewBox="0 0 16 16">
+<path fill-rule="evenodd"
+    d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+<path fill-rule="evenodd"
+    d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z" />
+</svg>`,
+    x: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+class= "bi bi-x-circle" viewBox="0 0 16 16" >
+<path fill-rule="evenodd"
+    d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+<path fill-rule="evenodd"
+    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+</svg >`
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ----------------------------------
+//Global variables 
 //main user data object constructor
 const myRoom = function (roomID, nameID, pinID, scoreID, deckID, statusID, userID) {
     this.room = roomID;
@@ -27,6 +101,33 @@ const myRoom = function (roomID, nameID, pinID, scoreID, deckID, statusID, userI
     this.status = statusID;
     this.userID = userID
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 let $myRoom = new myRoom();
 let $cardList;
 // show hide scores in room window based on status of supervisor from show button
@@ -128,6 +229,7 @@ function setUserID() {
     return userID;
 }
 
+
 function submitForm(e, i) {
     e.preventDefault();
     //Get values from form
@@ -149,26 +251,7 @@ function submitForm(e, i) {
         userID = setUserID();
         $myRoom.userID = userID;
         saveData(roomID, nameID, pinID, $myRoom.score, $myRoom.deck, i, userID);
-        //deckDisplay($myRoom.deck);
-        // if ($myRoom.status > 0) {
-        //     elMng.classList.remove('dispNone');
-        //     updateAllData();
-        //     let selectorEl = [];
-        //     selectorEl = document.querySelectorAll('#deckSel>li>a');
-        //     selectorEl.forEach((el, i) => {
-        //         el.addEventListener('click', () => {
-        //             $myRoom.deck = i;
-        //             updateData();
-        //             // updateAllData();
-        //             deckDisplay(i);
-        //         })
-        //     })
-        // }
-        // else {
-        //     elMng.classList.add('dispNone');
-        // }
-        //setInterval(readData, 30000);
-        //displayResults();
+
     }
 }
 
@@ -195,15 +278,6 @@ function saveData(room, name, pin, score, deck, status, userID) {
         status: status,
         userID: userID
     });
-    // var newRoom = roomDB.push();
-    // newRoom.set({
-    //     room: room,
-    //     name: name,
-    //     pin: pin,
-    //     score: score,
-    //     status: status
-    // })
-    //readData();
 }
 
 //Update firebase
@@ -239,31 +313,6 @@ function updateAllData() {
     readData();
 }
 
-//update Score Room window with participants
-function updateScores(userData) {
-    let scoreEl = document.getElementById('scores');
-    let imgPerson = '';
-    //console.log(userData)
-    //console.log($myRoom)
-    //console.log($cardDeck[$myRoom.deck].value);
-    let scoreView;
-
-    if ($showHide) {
-        scoreView = $cardDeck[$myRoom.deck].value[userData[1]];
-        if (userData[1] - 1 == 11) scoreView = `&#8734`;
-        if (userData[1] - 1 == 12) scoreView = `<img class="imgSVG3" src="https://online-planning-poker.web.app/svg/question-circle.svg" alt="">`;
-        if (userData[1] - 1 == 13) scoreView = `<img class="imgSVG3" src="https://online-planning-poker.web.app/svg/cup.svg" alt="">`;
-        if (userData[1] - 1 == 15) scoreView = '';
-    }
-    else scoreView = `<img class="imgSVG3" src="https://online-planning-poker.web.app/svg/suit-spade-fill.svg"; alt="bootstrap Icon">`;
-
-    let newtrEl = document.createElement("tr");
-    if (userData[2] == 0) imgPerson = `<img class="imgSVGs" src="https://online-planning-poker.web.app/svg/person.svg" alt="participant">`;
-    else imgPerson = `<img class="imgSVGs" src="https://online-planning-poker.web.app/svg/file-person.svg" alt="supervisor">`;
-
-    newtrEl.innerHTML = `<th scope="row">${scoreView}</th><td>${imgPerson}</td><td>${userData[0]}</td>`;
-    scoreEl.appendChild(newtrEl);
-}
 
 //Read from Firebase
 function readData() {
@@ -359,23 +408,108 @@ const checkCard = (e) => {
     }
 }
 
-function darkLight() {
-    containerBox = document.querySelector('#container');
-    containerBox.classList.add('darkMode');
+function generateID() {
+    let newID;
+    let timeSet = new Date();
+
+    newID = timeSet.getTime();
+    newID = newID + Math.floor(Math.random() * 1000000000000);
+    //console.log(userID);
+    return newID;
+}
+
+const clickActions = (e) => {
+    e.preventDefault();
+    //e.stopPropagation();
+    console.log(e)
+    console.log(e.target)
+    console.log(e.target.parentElement)
+    //New task
+    if (e.target.closest('button').classList.contains('taskAddBtn')) {
+        const btnEl = document.getElementById(e.target.closest('button').id);
+        const newTask = document.createElement('div');
+        const taskTextArea = document.createElement('textarea');
+        const taskID = generateID();
+        const spanX = document.createElement('button');
+        const spanLA = document.createElement('button');
+        const spanRA = document.createElement('button');
+        const headerTask = document.createElement('span');
+        spanX.innerHTML = iconSet.x;
+        spanX.classList.add('delete', 'taskBtn');
+        spanLA.innerHTML = iconSet.leftArrow;
+        spanLA.classList.add('left', 'taskBtn');
+        spanRA.innerHTML = iconSet.rightArrow;
+        spanRA.classList.add('right', 'taskBtn');
+        btnEl.after(newTask);
+        newTask.classList = 'task';
+        newTask.id = taskID;
+        headerTask.textContent = " Id: " + taskID + " ";
+        newTask.append(spanLA);
+        newTask.appendChild(headerTask);
+        newTask.appendChild(spanRA);
+        newTask.appendChild(spanX);
+        newTask.appendChild(taskTextArea);
+        taskTextArea.classList.add('taskText');
+        taskTextArea.placeholder =
+            'As a ... I want to... So that...';
+        taskTextArea.rows = 5;
+    }
+    if (e.target.parentElement.parentElement.classList.contains('delete')) {
+        e.target.parentElement.parentElement.parentElement.remove();
+    }
+    if (e.target.parentElement.classList.contains('delete')) {
+        e.target.parentElement.parentElement.remove();
+    }
+    if (e.target.classList.contains('delete')) {
+        e.target.parentElement.remove();
+    }
+
+    if (e.target.parentElement.classList.contains('left')) {
+        console.log('left')
+    }
+    if (e.target.parentElement.classList.contains('right')) {
+        console.log('right')
+    }
 
 }
 
+function darkLight() {
+    containerBox = document.querySelector('#container');
+    if (containerBox.classList.contains('darkMode')) {
+        containerBox.classList.remove('darkMode');
+        document.documentElement.style.setProperty('--color', 'black');
+        document.documentElement.style.setProperty('--background-color', 'white');
+    }
+    else {
+        containerBox.classList.add('darkMode');
+        document.documentElement.style.setProperty('--color', 'white');
+        document.documentElement.style.setProperty('--background-color', ' rgb(44, 44, 44)');
+    }
+}
+
+const addTask = (e) => {
+    const divElID = e.target.closest('div').id;
+    const divEl = getElementById('divElID');
+    console.log(divElID);
+    console.log(divEl);
+}
+
+
 const prepareDOMElements = () => {
     $cardList = document.querySelector('#board');
+    $taskBoxes = document.getElementsByClassName('taskBox');
+    console.log($taskBoxes);
 }
 
 const prepareDOMEvents = () => {
     let darkLightBtn = document.querySelector('#darkLight');
-
-    darkLightBtn.addEventListener('click', darkLight)
+    let boardEl = document.getElementById('board');
+    darkLightBtn.addEventListener('click', darkLight);
+    boardEl.addEventListener('click', clickActions);
 }
 
 const main = () => {
+    darkLight()
     roomForm();
     //displayCards();
     //displayResults();
