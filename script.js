@@ -18,7 +18,7 @@ firebase.initializeApp(firebaseConfig);
 
 //Global variables 
 //task object constructor
-function Task(roomID, nameID, pinID, headerTxt, descTxt, statusID, userID, priorityID, columnID) {
+function Task(roomID, nameID, pinID, headerTxt, descTxt, statusID, userID, priorityID, columnID, taskID) {
     this.userID = userID
     this.room = roomID;
     this.pin = pinID;
@@ -26,14 +26,14 @@ function Task(roomID, nameID, pinID, headerTxt, descTxt, statusID, userID, prior
     this.header = headerTxt;
     this.desc = descTxt;
     this.columnID = columnID;
+    this.taskID = taskID;
     this.priorityID = priorityID
     this.status = statusID;
 }
 
-
 let $taskBoxes;     // DOM elements - div-s for dynymic collection of tasks
 let $addTaskBtns;   // collection of add new task buttons in columns
-
+const $taskMap = new Map();
 //icons set
 const iconSet = {
     leftArrow: `<svg xmlns=" http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -73,34 +73,17 @@ class= "bi bi-x-circle" viewBox="0 0 16 16" >
 </svg >`
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ----------------------------------
 //Global variables 
-//main user data object constructor
-const myRoom = function (roomID, nameID, pinID, scoreID, deckID, statusID, userID) {
+//main board room data object constructor
+const myRoom = function (roomID, nameID, pinID, statusID, userID) {
     this.room = roomID;
     this.pin = pinID;
     this.name = nameID;
-    this.score = scoreID;
-    this.deck = deckID;
     this.status = statusID;
     this.userID = userID
 }
+let $myRoom = new myRoom(0, 0, 0, 0, 0);
 
 
 
@@ -110,25 +93,7 @@ const myRoom = function (roomID, nameID, pinID, scoreID, deckID, statusID, userI
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let $myRoom = new myRoom();
+// --------------------------------------
 let $cardList;
 // show hide scores in room window based on status of supervisor from show button
 let $showHide = false;
@@ -264,6 +229,9 @@ const roomForm = () => {
     });
 
 }
+//----------------------------------------------
+
+
 
 //Save to firebase
 function saveData(room, name, pin, score, deck, status, userID) {
@@ -421,60 +389,89 @@ function generateID() {
 const clickActions = (e) => {
     e.preventDefault();
     //e.stopPropagation();
-    console.log(e)
-    console.log(e.target)
-    console.log(e.target.parentElement)
     //New task
-    if (e.target.closest('button').classList.contains('taskAddBtn')) {
-        const btnEl = document.getElementById(e.target.closest('button').id);
-        const newTask = document.createElement('div');
-        const taskTextArea = document.createElement('textarea');
-        const taskID = generateID();
-        const spanX = document.createElement('button');
-        const spanLA = document.createElement('button');
-        const spanRA = document.createElement('button');
-        const headerTask = document.createElement('span');
-        spanX.innerHTML = iconSet.x;
-        spanX.classList.add('delete', 'taskBtn');
-        spanLA.innerHTML = iconSet.leftArrow;
-        spanLA.classList.add('left', 'taskBtn');
-        spanRA.innerHTML = iconSet.rightArrow;
-        spanRA.classList.add('right', 'taskBtn');
-        btnEl.after(newTask);
-        newTask.classList = 'task';
-        newTask.id = taskID;
-        headerTask.textContent = " Id: " + taskID + " ";
-        newTask.append(spanLA);
-        newTask.appendChild(headerTask);
-        newTask.appendChild(spanRA);
-        newTask.appendChild(spanX);
-        newTask.appendChild(taskTextArea);
-        taskTextArea.classList.add('taskText');
-        taskTextArea.placeholder =
-            'As a ... I want to... So that...';
-        taskTextArea.rows = 5;
-    }
-    if (e.target.parentElement.parentElement.classList.contains('delete')) {
-        e.target.parentElement.parentElement.parentElement.remove();
-    }
-    if (e.target.parentElement.classList.contains('delete')) {
-        e.target.parentElement.parentElement.remove();
-    }
-    if (e.target.classList.contains('delete')) {
-        e.target.parentElement.remove();
+    console.log(e.target.closest('button'));
+    if (e.target.closest('button') !== null) {
+        if (e.target.closest('button').classList.contains('taskAddBtn')) {
+            const btnEl = document.getElementById(e.target.closest('button').id);
+            const newTask = document.createElement('div');
+            const taskTextArea = document.createElement('textarea');
+            const taskID = generateID();
+            const spanX = document.createElement('button');
+            const spanLA = document.createElement('button');
+            const spanRA = document.createElement('button');
+            const headerTask = document.createElement('span');
+            spanX.innerHTML = iconSet.x;
+            spanX.classList.add('delete', 'taskBtn');
+            spanLA.innerHTML = iconSet.leftArrow;
+            spanLA.classList.add('left', 'taskBtn');
+            spanRA.innerHTML = iconSet.rightArrow;
+            spanRA.classList.add('right', 'taskBtn');
+            btnEl.after(newTask);
+            newTask.classList = 'task';
+            newTask.id = taskID;
+            headerTask.textContent = " Id: " + taskID + " ";
+            newTask.append(spanLA);
+            newTask.appendChild(headerTask);
+            newTask.appendChild(spanRA);
+            newTask.appendChild(spanX);
+            newTask.appendChild(taskTextArea);
+            taskTextArea.classList.add('taskText');
+            taskTextArea.placeholder =
+                'As a ... \n I (want to)... \n so that...';
+            taskTextArea.rows = 5;
+            let newTaskObj = new Task($myRoom.roomID, $myRoom.nameID, $myRoom.pinID, 'headerTxt', 'As a...', 1, 1, 1, 1, taskID);
+            $taskMap.set(taskID, newTaskObj);
+
+        }
+        // if (e.target.parentElement.parentElement.classList.contains('delete')) {
+        //     e.target.parentElement.parentElement.parentElement.remove();
+        // }
+        // if (e.target.parentElement.classList.contains('delete')) {
+        //     e.target.parentElement.parentElement.remove();
+        // }
+        if (e.target.closest('button').classList.contains('delete')) {
+            let mapKey = Number(e.target.closest('button').parentElement.id);
+            $taskMap.delete(mapKey); // remove task from map tabble 
+            e.target.closest('button').parentElement.remove(); // remove task from board
+        }
+        if (e.target.closest('button').classList.contains('left')) {
+            let taskEl = e.target.closest('button').parentElement;
+            let colEl = e.target.closest('button').parentElement.parentElement;
+            let colElPrev = colEl.previousElementSibling;
+            console.log(colElPrev);
+            if (colElPrev !== null) colElPrev.appendChild(taskEl);
+
+        }
+        if (e.target.closest('button').classList.contains('right')) {
+            let taskEl = e.target.closest('button').parentElement;
+            let colEl = e.target.closest('button').parentElement.parentElement;
+            let colElNext = colEl.nextElementSibling;
+            if (colElNext !== null) colElNext.appendChild(taskEl);
+        }
+
     }
 
-    if (e.target.parentElement.classList.contains('left')) {
-        console.log('left')
+    if (e.target.closest('textarea')) {
+        console.log('textarea')
+        let textAreaEl = e.target.closest('textarea');
+        let mapKey = Number(textAreaEl.parentElement.id);
+
+        textAreaEl.addEventListener('change', (e) => {
+            console.log(textAreaEl.value)
+            let newTaskObj = new Task($myRoom.roomID, $myRoom.nameID, $myRoom.pinID, textAreaEl.value, 'As a...', 1, 1, 1, 1, mapKey);
+            $taskMap.set(mapKey, newTaskObj);
+            console.log($taskMap.get(mapKey));
+            console.log($taskMap);
+        });
     }
-    if (e.target.parentElement.classList.contains('right')) {
-        console.log('right')
-    }
+
+
 
 }
 
 function darkLight() {
-    containerBox = document.querySelector('#container');
+    containerBox = document.querySelector('body');
     if (containerBox.classList.contains('darkMode')) {
         containerBox.classList.remove('darkMode');
         document.documentElement.style.setProperty('--color', 'black');
@@ -490,8 +487,8 @@ function darkLight() {
 const addTask = (e) => {
     const divElID = e.target.closest('div').id;
     const divEl = getElementById('divElID');
-    console.log(divElID);
-    console.log(divEl);
+    // console.log(divElID);
+    // console.log(divEl);
 }
 
 
