@@ -9,8 +9,11 @@ body{
 #container{
     height: 100vh;
     min-width: 1400px;
+    
 }
-
+main{
+    height: 90vh;
+}
 .darkMode{
     background-color: var(--background-color);
     color: var(--color);
@@ -59,6 +62,9 @@ body{
     color: var(--color);
       
   }
+  .taskID{
+      font-size: smaller;
+  }
   .taskBtn{
     background-color: var(--background-color);
     color: var(--color);
@@ -68,4 +74,21 @@ body{
   }
   textarea{
       min-height: auto;
+  }
+  .footerSpace{
+      height: 10vh;
+  }
+  footer{
+      height: 10vh;
+      width: 100vw;
+      clear: both;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      background-color: var(--background-color);
+      color: grey;
+  }
+  footer:hover{
+    color: var(--color);
+    transition: 1s;
   }
