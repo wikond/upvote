@@ -1,0 +1,94 @@
+:root{
+    --color : white;
+    --background-color: rgb(44, 44, 44);
+}
+
+body{
+    
+}
+#container{
+    height: 100vh;
+    min-width: 1400px;
+    
+}
+main{
+    height: 90vh;
+}
+.darkMode{
+    background-color: var(--background-color);
+    color: var(--color);
+}
+.cardBox{
+}
+.cardBox:hover{
+    background-color: lightskyblue;
+    transition: 0.75s;
+    cursor: pointer;
+}
+.selected{
+    background-color: lightskyblue;
+}
+
+.imgSVGs{
+    
+}
+  .dispNone{
+      display: none;
+  }
+
+  #board{
+      height: 80vh;
+      
+  }
+
+  .task{
+      border: solid 2px lightblue;
+      border-radius: 10px;
+      margin-top: 3px;
+      margin-bottom: 3px;
+      text-align: center;
+  }
+  .task>span>svg{
+      width: 20px;
+      height: 20px;
+  }
+  .taskText{
+      margin: 3px;
+      width: 90%;
+      border-radius: 10px;
+      border: none;
+      outline-style: none;
+      background-color: var(--background-color);
+    color: var(--color);
+      
+  }
+  .taskID{
+      font-size: smaller;
+  }
+  .taskBtn{
+    background-color: var(--background-color);
+    color: var(--color);
+    border: red;
+    border-style: none;
+    outline-style: none;
+  }
+  textarea{
+      min-height: auto;
+  }
+  .footerSpace{
+      height: 10vh;
+  }
+  footer{
+      height: 10vh;
+      width: 100vw;
+      clear: both;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      background-color: var(--background-color);
+      color: grey;
+  }
+  footer:hover{
+    color: var(--color);
+    transition: 1s;
+  }

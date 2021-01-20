@@ -1,6 +1,7 @@
 {
   "rulesFile": "database.rules.json",
   "hosting": {
+    "site": "simple-scrum-board",
     "public": "public",
     "ignore": [
       "firebase.json",
