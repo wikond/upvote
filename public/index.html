@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Scrum Board</title>
+    <title>Upvote topics</title>
     <meta name="description" content="Online Simple Scrum board">
-    <meta name="keywords" content="Agile, Scrum, Board">
+    <meta name="keywords" content="Agile, Scrum, Upvote">
     <meta name="author" content="WebAutoRobot">
     <!-- HTML CSS JavaScript Firebase Bootstrap -->
 
@@ -22,35 +22,33 @@
         <div class="row ">
             <h1 class="display-2">
                 <strong>
-                    Scrum Board
+                    Upvote Topics
                 </strong>
-                <button type="" class="btn btn-secondary pl-2 pr-2" id="darkLight">
+                <button type="" class=" pl-2 pr-2 " id="darkLight">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-circle-half" viewBox="0 0 16 16">
+                        class="bi bi-circle-half " viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 15V1a7 7 0 1 1 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
                     </svg>
                 </button>
             </h1>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="col-md-12 col-lg-8 col-xl-6">
-                    <form id='inputForm'>
-                        <div class="row">
-                            <div class="col mt-1">
-                                <div class="row">
-                                    <input type="number" id="inputBoard" name='room' class="form-control w-25"
-                                        placeholder="Board number">
-                                    <input type="password" id="inputPIN" name='pin' class="form-control w-25"
-                                        class="row mt-1" placeholder="PIN">
-                                    <input type="text" id="inputUser" name='name' class="form-control w-25"
-                                        placeholder="Name">
-                                    <button type="submit" class="btn btn-success w-25 pl-2" id="joinBtn">Join</button>
-                                </div>
-                    </form>
+        <form id='inputForm'>
+            <div class="row p-3 ">
+                <div class="col-12 col-sm-6 col-lg-2 ">
+                    <input type="number" id="inputBoard" name='room' class="form-control " placeholder="Room Nr">
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <input type="password" id="inputPIN" name='pin' class="form-control " class="row mt-1"
+                        placeholder="PIN">
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <input type="text" id="inputUser" name='name' class="form-control " placeholder="Name">
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <button type="submit" class="btn btn-primary w-100 pl-2" id="joinBtn">Join</button>
                 </div>
             </div>
-        </div>
+        </form>
 
         <div class="row mt-2" id="board">
 
@@ -67,9 +65,10 @@
         integrity="sha384-popRpmFF9JQgExhfw5tZT4I9/CI5e2QcuUZPOVXb1m7qUmeR2b50u+YFEYe1wgzy" crossorigin="anonymous">
     </script>
 
+
     <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-database.js"></script>
 
     <!-- TODO: Add SDKs for Firebase products that you want to use
     https://firebase.google.com/docs/web/setup#available-libraries 

@@ -16,15 +16,15 @@ firebase.initializeApp(firebaseConfig);
 //firebase.analytics();
 
 //Global variables 
-//topic object constructor
-function Topic(boardID, nameID, pinID, headerTxt, descTxt, statusID, priorityID, columnID, topicID, categoryID, owner, timeStamp) {
+//task object constructor
+function Task(boardID, nameID, pinID, headerTxt, descTxt, statusID, priorityID, columnID, taskID, categoryID, owner, timeStamp) {
     this.boardID = boardID;
     this.pin = pinID;
     this.nameID = nameID;
     this.header = headerTxt;
     this.desc = descTxt;
     this.columnID = columnID;
-    this.topicID = topicID;
+    this.taskID = taskID;
     this.priorityID = priorityID;
     this.status = statusID;
     this.categoryID = categoryID;
@@ -35,39 +35,15 @@ function Scores() {
     this.scores = $MyScoresTab;
     this.userName = $myBoard.nameID;
 }
-// ----------------------------------
-//Global variables 
-//main board room data object constructor
-const myBoard = function (boardID, nameID, pinID, statusID, userID) {
-    this.boardID = boardID;
-    this.pinID = pinID;
-    this.nameID = nameID;
-    this.statusID = statusID;
-    this.userID = userID
-}
-function resetGlobals() {
-    $myBoard = new myBoard(0, 0, 0, 0, 0);
-    $MyScores = new Map();
-    $MyScoresTab = [];
-    $allScoresMap = new Map();
-    $MyTopicsTab = [];
-    $AllTopicsTab = [];
-    $AllTopicsObjTab = [];
-    $allScoresSorted = [];
-    $topicBoxes;     // DOM elements - div-s for dynymic collection of topics
-    $addTopicBtns;   // collection of add new topic buttons in columns
-}
-
-let $myBoard = new myBoard(0, 0, 0, 0, 0);
-let $MyScores = new Map();
-let $MyScoresTab = [];
+const $MyScores = new Map();
+const $MyScoresTab = [];
+let $allScoresTab = [];
 let $allScoresMap = new Map();
 let $MyTopicsTab = [];
-let $AllTopicsTab = [];
-let $AllTopicsObjTab = [];
-let $topicBoxes;     // DOM elements - div-s for dynymic collection of topics
-let $addTopicBtns;   // collection of add new topic buttons in columns
-let $allScoresSorted = [];
+const $taskMap = new Map();
+let $taskBoxes;     // DOM elements - div-s for dynymic collection of tasks
+let $addTaskBtns;   // collection of add new task buttons in columns
+
 //icons set
 const iconSet = {
     leftArrow: `<svg xmlns=" http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16"> <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" /><path fill-rule="evenodd"
@@ -82,6 +58,17 @@ const iconSet = {
     </svg>`
 }
 
+// ----------------------------------
+//Global variables 
+//main board room data object constructor
+const myBoard = function (boardID, nameID, pinID, statusID, userID) {
+    this.boardID = boardID;
+    this.pinID = pinID;
+    this.nameID = nameID;
+    this.statusID = statusID;
+    this.userID = userID
+}
+let $myBoard = new myBoard(0, 0, 0, 0, 0);
 
 
 function getInputValue(id) {
@@ -98,11 +85,14 @@ function setUserID() {
     return userID;
 }
 
+function updateScores() {
+    console.log($allScoresTab);
+    console.log($allScoresTab[0]);
 
+}
 
-async function submitForm(e, i) {
+function submitForm(e, i) {
     e.preventDefault();
-    resetGlobals(); //reset global variables
     //Get values from form
     let boardID = getInputValue('inputBoard');
     let pinID = getInputValue('inputPIN');
@@ -113,14 +103,11 @@ async function submitForm(e, i) {
         $myBoard.pinID = pinID;
         $myBoard.nameID = nameID;
         displayBoard();
-        const res1 = await readData('scores');
-        const res2 = await readData('topics');
-        //displayAllTopics();
-        console.log($AllTopicsObjTab);
+        setTimeout(readData('scores'), 1000);
+        setTimeout(updateScores(), 1000);
+        setTimeout(readData('topics'), 1000);
+
     }
-
-
-
 }
 
 //Form for collecting room login information
@@ -130,12 +117,13 @@ const boardForm = () => {
         let i = 0; //join
         submitForm(e, i)
     });
+
 }
 //----------------------------------------------
 
 //Save to firebase
 function saveData(hive, selector, dataObj) {
-    // ($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', textAreaEl.value, 1, 1, 1, topicID, 1, 'owner', timeStamp);
+    // ($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', textAreaEl.value, 1, 1, 1, taskID, 1, 'owner', timeStamp);
     //refer to specific database
     const roomDB = firebase.database().ref(hive + $myBoard.boardID + $myBoard.pinID + '/' + selector);
     roomDB.set({
@@ -143,10 +131,10 @@ function saveData(hive, selector, dataObj) {
     });
 }
 
-function deleteData(hive, topicID) {
-    // ($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', textAreaEl.value, 1, 1, 1, topicID, 1, 'owner', timeStamp);
+function deleteData(hive, taskID) {
+    // ($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', textAreaEl.value, 1, 1, 1, taskID, 1, 'owner', timeStamp);
     //refer to specific database
-    const roomDB = firebase.database().ref(hive + $myBoard.boardID + $myBoard.pinID + '/' + topicID);
+    const roomDB = firebase.database().ref(hive + $myBoard.boardID + $myBoard.pinID + '/' + taskID);
     roomDB.remove();
 }
 
@@ -181,55 +169,7 @@ function updateAllData(hive) {
     })
     //readData(topic);
 }
-function updateMyScores(scoreVal) {
-    //console.log(scoreVal);
-    $MyScoresTab.push(scoreVal);
-    //console.log($MyScoresTab);
-}
-function updateAllScores(elTab, elName) {
-    elTab.forEach(el => {
-        if ($allScoresMap.has(el)) {
-            let newScore;
-            newScore = $allScoresMap.get(el);
-            newScore++;
-            $allScoresMap.set(el, newScore);
-        }
-        else $allScoresMap.set(el, 1);
-        //console.log($myBoard);
-        if (elName == $myBoard.nameID) {
-            $MyScoresTab.push(el);
-        }
-    })
-    //console.log($allScoresMap)
-    $allScoresSorted = sortScores();
-}
 
-function sortScores() {
-    let scoresSorted = [];
-    $allScoresMap.forEach((key, value) => {
-        function Scores(topicID, score) {
-            this.topicID = topicID;
-            this.score = score;
-        }
-        scoreEl = new Scores(value, key);
-        scoresSorted.push(scoreEl);
-    })
-    scoresSorted.sort(function (a, b) {
-        return b.score - a.score;
-    });
-    return scoresSorted;
-}
-
-function updateTopics(topicID, topicObj) {
-    if ($AllTopicsObjTab.includes(topicID)) {
-        let topicObjIndex = $AllTopicsObjTab.indexOf(topicID) + 1;
-        $AllTopicsObjTab(topicObjIndex) = topicObj;
-    }
-    else {
-        $AllTopicsObjTab.push(topicID);
-        $AllTopicsObjTab.push(topicObj);
-    }
-}
 
 //Read from Firebase
 function readData(hive) {
@@ -239,72 +179,51 @@ function readData(hive) {
             function (ChildSnapshot) {
                 let dataObj;
                 dataObj = ChildSnapshot.val().dataObj;
-                if (hive == 'topics') {
-                    updateTopics(dataObj.topicID, dataObj);
-                    //displayTopic(dataObj.topicID, dataObj);
-                }
+                // console.log(ChildSnapshot.val());
+                //dataObjTab.push(dataObj);
+                // console.log(hive);
+                // console.log(dataObj);
+                if (hive == 'topics') displayTask(dataObj.taskID, dataObj);
                 if (hive == 'scores') {
-                    updateAllScores(dataObj.scores, dataObj.userName);
+                    let newScoreObj = new Scores();
+                    newScoreObj.userName = dataObj.userName;
+                    newScoreObj.scores = dataObj.scores;
+                    $allScoresTab.push(newScoreObj);
+                    newScoreObj.scores.forEach(el => {
+                        console.log(el);
+                        if ($allScoresMap.has(el)) {
+                            let newScore = $allScoresMap.get(el)++;
+                            $allScoresMap.set(el, newScore);
+                        }
+                        else $allScoresMap.set(el, 1);
+                        if (dataObj.userName == $myBoard.nameID) {
+                            $MyScoresTab.push(el);
+                        }
+                    })
                 }
-                //displayTopic(topicObj.topicID, topicObj);
+
+                //$taskMap.set(taskObj.taskID, taskObj);
+                //displayTask(taskObj.taskID, taskObj);
             }
         );
-        if (hive == 'topics') {
-            displayAllTopics();
-        }
-
         //setTimeout(displayBoard, 100);
     });
 }
 
-const displayScoreTopic = (topicID) => {
-    let elID = topicID + 'score';
-    let scoreEl = document.getElementById(elID);
-
-    let scoreTotal = 0;
-    if ($allScoresMap.has(topicID)) scoreTotal = $allScoresMap.get(topicID);
-    scoreEl.innerText = scoreTotal;
-    if ($MyScoresTab.includes(Number(topicID))) {
-        scoreEl.classList.remove('btn-primary')
-        scoreEl.classList.add('btn-success');
+const displayTask = (taskID, newTaskObj) => {
+    const colEl = document.getElementById(newTaskObj.columnID + 'colBox');
+    let newTask = document.getElementById(taskID);
+    if (newTask == null) {
+        newTask = document.createElement('div');
+        colEl.appendChild(newTask);
     }
-    else {
-        scoreEl.classList.remove('btn-success')
-        scoreEl.classList.add('btn-primary');
-    }
-}
-
-const displayAllTopics = () => {
-    console.log($allScoresSorted);
-
-    $allScoresSorted.forEach((index, value) => {
-        //console.log(index, value);
-        //console.log(index.topicID);
-
-        let topicIndex = $AllTopicsObjTab.indexOf(Number(index.topicID)) + 1;
-        //console.log($AllTopicsObjTab[topicIndex]);
-        //console.log($AllTopicsObjTab);
-        if (topicIndex > 0) displayTopic(Number(index.topicID), $AllTopicsObjTab[topicIndex]);
-
-    })
-
-}
-
-const displayTopic = (topicID, newTopicObj) => {
-    console.log(newTopicObj);
-    const colEl = document.getElementById(newTopicObj.columnID + 'colBox');
-    let newTopic = document.getElementById(topicID);
-    if (newTopic == null) {
-        newTopic = document.createElement('div');
-        colEl.appendChild(newTopic);
-    }
-    else newTopic.innerHTML = ``;
+    else newTask.innerHTML = ``;
 
     const colTxt = document.createElement('div');
     const colBtns = document.createElement('div');
-    const topicTextArea = document.createElement('textarea');
-    //const topicID = generateID();
-    const headerTopic = document.createElement('div');
+    const taskTextArea = document.createElement('textarea');
+    //const taskID = generateID();
+    const headerTask = document.createElement('div');
     const spanX = document.createElement('button');
     const spanLA = document.createElement('button');
     const spanT = document.createElement('button');
@@ -312,49 +231,50 @@ const displayTopic = (topicID, newTopicObj) => {
     const timeNow = new Date();
     const timeStamp = timeNow.getTime();
 
-    colTxt.classList.add('col-12', 'col-md-9', 'col-xl-11');
-    colBtns.classList.add('col-12', 'col-md-3', 'col-xl-1', 'px-1', 'btnsBox', 'justify-content-end', 'd-grid', 'gap-2', 'd-flex');
+    colTxt.classList.add('col-9');
+    colBtns.classList.add('col-3', 'px-1');
     spanX.innerHTML = iconSet.x;
-    spanX.classList.add('delete', 'topicBtn', 'text-danger', 'mt-2', 'btn');
-    spanX.type = 'button';
+    spanX.classList.add('delete', 'taskBtn', 'text-danger');
     spanT.innerHTML = iconSet.thumb;
-    spanT.classList.add('right', 'topicBtn', 'text-success', 'mt-2');
+    spanT.classList.add('right', 'taskBtn', 'text-success');
 
-    //btnEl.after(newTopic);
-    newTopic.classList.add('topic', 'row', 'm-2', 'shadow-sm');
-    newTopic.id = topicID;
+    //btnEl.after(newTask);
+    newTask.classList.add('task', 'row');
+    newTask.id = taskID;
 
-    scoreEl.classList.add('btn', 'score', 'mt-3');
-    scoreEl.type = 'button';
-    scoreEl.id = topicID + 'score';
+    scoreEl.classList.add('btn', 'score');
 
-    // let scoreTotal = 0;
-    // if ($allScoresMap.has(topicID)) scoreTotal = $allScoresMap.get(topicID);
-    // scoreEl.innerText = scoreTotal;
+    if ($MyScoresTab.includes(Number(taskID))) {
+        scoreEl.classList.add('btn-success');
+    }
+    else scoreEl.classList.add('btn-primary');
+
+    let scoreTotal = 0;
+    if ($allScoresMap.has(taskID)) scoreTotal = $allScoresMap.get(taskID);
+    scoreEl.innerText = scoreTotal;
     // colTxt.classList.add('border');
     // colBtns.classList.add('border');
 
-    headerTopic.textContent = "Id:" + topicID + "";
-    headerTopic.classList.add('fw-lighter', 'topicID')
-    //newTopic.append(spanLA);
-    newTopic.appendChild(colTxt);
-    newTopic.appendChild(colBtns);
-    //colTxt.appendChild(headerTopic);
-    colTxt.appendChild(topicTextArea);
+    headerTask.textContent = "Id:" + taskID + "";
+    headerTask.classList.add('fw-lighter', 'taskID')
+    //newTask.append(spanLA);
+    newTask.appendChild(colTxt);
+    newTask.appendChild(colBtns);
+    colTxt.appendChild(taskTextArea);
+    colTxt.appendChild(headerTask);
     colBtns.appendChild(scoreEl);
-    displayScoreTopic(topicID);
-
     colBtns.appendChild(spanX);
     //colBtns.appendChild(spanT); //thumb svg
-    topicTextArea.classList.add('topicText', 'text-primary');
-    if (newTopicObj.desc == null) {
-        topicTextArea.placeholder = 'Please add here your topic';
+    taskTextArea.classList.add('taskText');
+    if (newTaskObj.desc == null) {
+        taskTextArea.placeholder = 'Please add here your topic';
     }
-    else topicTextArea.value = newTopicObj.desc;
-    //topicTextArea.rows = 2;
+    else taskTextArea.value = newTaskObj.desc;
+    //taskTextArea.rows = 2;
     //let owner = '';
-    //Topic(boardID, nameID, pinID, headerTxt, descTxt, statusID, priorityID, columnID, topicID, categoryID, owner)
-    //let newTopicObj = new Topic($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', 'As a...', 1, 1, 1, topicID, 1, owner, timeStamp);
+    //Task(boardID, nameID, pinID, headerTxt, descTxt, statusID, priorityID, columnID, taskID, categoryID, owner)
+    //let newTaskObj = new Task($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', 'As a...', 1, 1, 1, taskID, 1, owner, timeStamp);
+    //$taskMap.set(taskID, newTaskObj);
 
 }
 
@@ -374,11 +294,11 @@ const displayBoard = () => {
         containerEl.appendChild(divEl);
         divEl.appendChild(h3El);
         h3El.textContent = colHeaders[i];
-        //<button type="" class="btn btn-secondary pl-2 topicAddBtn" id="1topicAdd">Add new topic</button>
+        //<button type="" class="btn btn-secondary pl-2 taskAddBtn" id="1taskAdd">Add new task</button>
         if (i == 0) {
             let buttEl = document.createElement('button');
-            buttEl.classList.add('btn', 'btn-primary', 'pl-2', 'topicAddBtn');
-            buttEl.id = '1topicAdd';
+            buttEl.classList.add('btn', 'btn-primary', 'pl-2', 'taskAddBtn');
+            buttEl.id = '1taskAdd';
             buttEl.innerText = 'Add new topic';
             divEl.appendChild(buttEl);
             h3El.classList.add('fw-lighter');
@@ -399,68 +319,70 @@ function generateID() {
     return newID;
 }
 
-const setScore = (topicID, scoreVal) => {
+const setScore = (taskID, scoreVal) => {
     let scoreTotal = scoreVal;
-    if ($allScoresMap.has(topicID)) {
-        scoreTotal = $allScoresMap.get(topicID);
+    if ($allScoresMap.has(taskID)) {
+        scoreTotal = $allScoresMap.get(taskID);
         scoreTotal += scoreVal;
     }
-    $allScoresMap.set(topicID, scoreTotal);
+    $allScoresMap.set(taskID, scoreTotal);
     return scoreTotal;
 }
 const clickActions = (e) => {
     e.preventDefault();
     //e.stopPropagation();
-    //New topic
+    //New task
     // if ($myBoard.boardID == 0) alert('Please join your board first')
     if ((e.target.closest('button') !== null)) {
         //&& ($myBoard.boardID !== 0)) {
         // && $myBoard.boardID == 0) {  // !!! change to !==
-        if (e.target.closest('button').classList.contains('topicAddBtn')) {
-            const topicID = generateID();
+        if (e.target.closest('button').classList.contains('taskAddBtn')) {
+            const taskID = generateID();
             const timeNow = new Date();
             const timeStamp = timeNow.getTime();
             let owner = '';
-            // //Topic(boardID, nameID, pinID, headerTxt, descTxt, statusID, priorityID, columnID, topicID, categoryID, owner, timestamp)
-            let newTopicObj = new Topic($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', null, 1, 1, 0, topicID, 1, owner, timeStamp);
-            $MyScores.set(topicID, 1);
-            $MyScoresTab.push(topicID);
-            let scoreVal;
-            scoreVal = setScore(topicID, 1);
-
-            //saveData('topics', topicID, newTopicObj);
-            displayTopic(topicID, newTopicObj);
+            // //Task(boardID, nameID, pinID, headerTxt, descTxt, statusID, priorityID, columnID, taskID, categoryID, owner, timestamp)
+            let newTaskObj = new Task($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', null, 1, 1, 0, taskID, 1, owner, timeStamp);
+            $taskMap.set(taskID, newTaskObj);
+            $MyScores.set(taskID, 1);
+            $MyScoresTab.push(taskID);
+            saveData('topics', taskID, newTaskObj);
+            displayTask(taskID, newTaskObj);
 
         }
 
         if (e.target.closest('button').classList.contains('delete')) {
-            let topicID = e.target.closest('button').parentElement.parentElement.id;
-            let mapKey = Number(topicID);
-            if ($MyScoresTab.includes(Number(topicID))) {
-                $MyScoresTab.splice($MyScoresTab.indexOf(Number(topicID)), 1);
+            let taskID = e.target.closest('button').parentElement.parentElement.id;
+            let mapKey = Number(taskID);
+            if ($MyScoresTab.includes(Number(taskID))) {
+                $MyScoresTab.splice($MyScoresTab.indexOf(Number(taskID)), 1);
             }
-            e.target.closest('button').parentElement.parentElement.remove(); // remove topic from board
+            $taskMap.delete(mapKey); // remove task from map tabble 
+            e.target.closest('button').parentElement.parentElement.remove(); // remove task from board
             deleteData('topics', mapKey);
         }
         if (e.target.closest('button').classList.contains('score')) {
-            let topicEl = e.target.closest('div').parentElement;
-            let topicID = Number(e.target.closest('div').parentElement.id);
+            let taskEl = e.target.closest('div').parentElement;
+            let taskID = Number(e.target.closest('div').parentElement.id);
             const timeNow = new Date();
             let timeStamp = timeNow.getTime();
+            let taskObj = $taskMap.get(taskID);
             let scoreVal;
 
-            if ($MyScoresTab.includes(Number(topicID))) {
-                $MyScoresTab.splice($MyScoresTab.indexOf(Number(topicID)), 1);
-                scoreVal = setScore(topicID, -1);
+            if ($MyScoresTab.includes(Number(taskID))) {
+                $MyScoresTab.splice($MyScoresTab.indexOf(Number(taskID)), 1);
+                scoreVal = setScore(taskID, -1);
             }
             else {
-                $MyScoresTab.push(topicID);
-                scoreVal = setScore(topicID, 1);
+                $MyScoresTab.push(taskID);
+                scoreVal = setScore(taskID, 1);
             }
 
-            //let descTxt = topicObj.desc;
-            //let descTxt = "What is the idea?";
-            //let newTopicObj = new Topic($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', descTxt, 1, scoreVal, 0, topicID, 1, 'owner', timeStamp);
+
+            //let descTxt = taskObj.desc;
+            let descTxt = "What is the idea?";
+            let newTaskObj = new Task($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', descTxt, 1, scoreVal, 0, taskID, 1, 'owner', timeStamp);
+            $taskMap.set(taskID, newTaskObj);
 
 
             const MyScoresObj = new Scores();
@@ -470,8 +392,8 @@ const clickActions = (e) => {
 
             saveData('scores', $myBoard.nameID, MyScoresObj);
 
-            //saveData('topics', topicID, newTopicObj);
-            displayScoreTopic(topicID);
+            saveData('topics', taskID, newTaskObj);
+            displayTask(taskID, newTaskObj);
         }
 
 
@@ -484,53 +406,40 @@ const clickActions = (e) => {
         textAreaEl.addEventListener('change', (e) => {
             const timeNow = new Date();
             let timeStamp = timeNow.getTime();
-            let topicID = Number(textAreaEl.parentElement.parentElement.id);
+            let taskID = Number(textAreaEl.parentElement.parentElement.id);
             let colName = textAreaEl.parentElement.parentElement.parentElement.id;
             let colID = Number(colName[0]);
 
-            let newTopicObj = new Topic($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', textAreaEl.value, 1, 1, colID, topicID, 1, 'owner', timeStamp);
-
-            const MyScoresObj = new Scores();
-            MyScoresObj.scores = $MyScoresTab;
-            MyScoresObj.userName = $myBoard.nameID;
-            //console.log($myBoard);
-
-            saveData('scores', $myBoard.nameID, MyScoresObj);
-
-            saveData('topics', topicID, newTopicObj);
-            displayTopic(topicID, newTopicObj);
+            let newTaskObj = new Task($myBoard.boardID, $myBoard.nameID, $myBoard.pinID, 'headerTxt', textAreaEl.value, 1, 1, colID, taskID, 1, 'owner', timeStamp);
+            $taskMap.set(taskID, newTaskObj);
+            saveData('topics', taskID, newTaskObj);
+            displayTask(taskID, newTaskObj);
         });
     }
 }
 
 function darkLight() {
     containerBox = document.querySelector('body');
-    //let darkLightBtn = document.querySelector('#darkLight');
     if (containerBox.classList.contains('darkMode')) {
         containerBox.classList.remove('darkMode');
         document.documentElement.style.setProperty('--color', 'black');
         document.documentElement.style.setProperty('--background-color', 'white');
-        //darkLightBtn.classList.remove('btn-dark');
-        //darkLightBtn.classList.add('btn-light');
-
     }
     else {
         containerBox.classList.add('darkMode');
         document.documentElement.style.setProperty('--color', 'white');
-        document.documentElement.style.setProperty('--background-color', ' rgb(5, 0, 40)');
-        //darkLightBtn.classList.remove('btn-light');
-        //darkLightBtn.classList.add('btn-dark');
+        document.documentElement.style.setProperty('--background-color', ' rgb(44, 44, 44)');
     }
 }
 
-const addTopic = (e) => {
+const addTask = (e) => {
     const divElID = e.target.closest('div').id;
     const divEl = getElementById('divElID');
 }
 
 const prepareDOMElements = () => {
     $cardList = document.querySelector('#board');
-    $topicBoxes = document.getElementsByClassName('topicBox');
+    $taskBoxes = document.getElementsByClassName('taskBox');
 }
 
 const prepareDOMEvents = () => {
@@ -541,7 +450,6 @@ const prepareDOMEvents = () => {
 }
 
 const main = () => {
-    //console.log('----------------------------------------------')
     displayBoard();
     darkLight()
     boardForm();
